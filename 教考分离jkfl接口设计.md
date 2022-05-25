@@ -41,9 +41,9 @@
 | delete_cass         | int clazzId                | void          | 删除课程     |
 | update_class_info   | Clazz clazz                | void          | 更新课程信息 |
 | find_class_list     | String search              | list<Clazz>   | 查询课程     |
-| add_class_stu       | int clazzId，int studentId | void          | 添加课程学生 |
-| delete_class_stu    | int clazzId，int studentId | void          | 删除课程学生 |
-| find_class_stu_list | String search              | list<Student> | 查询课程学生 |
+| add_class_stu       | int clazzId, int studentId | void          | 添加课程学生 |
+| delete_class_stu    | int clazzId, int studentId | void          | 删除课程学生 |
+| find_class_stu_list | String clazzId, String search              | list<Student> | 查询课程学生 |
 |                     |                            |               |              |
 
 > NoticeController
