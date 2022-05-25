@@ -17,5 +17,5 @@ public class Notice {
 	private Integer clazzId;
 
 	@Column(name = "content")
-	private Integer content;
+	private Sting content;
 }
