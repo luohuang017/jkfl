@@ -37,4 +37,9 @@ public class StuAnswer {
 	@Column(name = "correct_answer")
 	private String correctAnswer;
 
+	@Column(name = "stu_scores")
+	private Double stuScores;
+
+	@Column(name = "default_scores")
+	private Double defaultScores;
 }

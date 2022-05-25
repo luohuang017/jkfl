@@ -34,4 +34,6 @@ public class Question {
 	@Column(name = "difficulty_ratio")
 	private Double difficultyRatio;
 
+	@Column(name = "default_scores")
+	private Double defaultScores;
 }
