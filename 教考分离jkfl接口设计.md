@@ -2,24 +2,24 @@
 
 > StudentController
 
-| 接口名称             | 传入参数                      | 返回类型         | 作用             |
-| -------------------- | ----------------------------- | ---------------- | ---------------- |
-| student_register     | Student student               | void             | 学生注册         |
-| student_updateInfo   | Student student               | void             | 学生修改个人信息 |
-| submit_answer        | List<StuAnswer>               | void             | 学生提交答案     |
-| find_history_exams   | Student student,String search | List<Stu_Scores> | 学生查看历史考试 |
-| find_classmates_list | Student student,Clazz class   | List<User>       | 学生查看同学     |
-| stu_find_class       | Student student               | List<Clazz>      | 学生查看课程     |
-| stu_find_question    | Student student,Exam exam     | List<Stu_Answer> | 学生查看题目     |
-|                      |                               |                  |                  |
+| 接口名称             | 传入参数                | 返回类型         | 作用             |
+| -------------------- | ----------------------- | ---------------- | ---------------- |
+| student_register     | User user               | void             | 学生注册         |
+| student_updateInfo   | User user               | void             | 学生修改个人信息 |
+| submit_answer        | List<StuAnswer>         | void             | 学生提交答案     |
+| find_history_exams   | User user,String search | List<Stu_Scores> | 学生查看历史考试 |
+| find_classmates_list | User user,Clazz class   | List<User>       | 学生查看同学     |
+| stu_find_class       | User user               | List<Clazz>      | 学生查看课程     |
+| stu_find_question    | User user,Exam exam     | List<Stu_Answer> | 学生查看题目     |
+|                      |                         |                  |                  |
 
 > TeacherController
 
-| 接口名称           | 传入参数        | 返回类型    | 作用         |
-| ------------------ | --------------- | ----------- | ------------ |
-| teacherUpdateInfo  | Teacher teacher | void        | 教师修改信息 |
-| teacherFindMyClass | Teacher teacher | List<Clazz> | 教师查看课程 |
-|                    |                 |             |              |
+| 接口名称           | 传入参数  | 返回类型    | 作用         |
+| ------------------ | --------- | ----------- | ------------ |
+| teacherUpdateInfo  | User user | void        | 教师修改信息 |
+| teacherFindMyClass | User user | List<Clazz> | 教师查看课程 |
+|                    |           |             |              |
 
 > UserController
 
