@@ -12,6 +12,7 @@ import javax.annotation.Resource;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.List;
+
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -25,8 +26,6 @@ public class UserController {
         if(res == null) {
             return Result.error("-1", "用户名或密码错误");
         }
-//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
-//        String s = sdf.format(new Timestamp(System.currentTimeMillis()));
         Timestamp date =  new Timestamp(System.currentTimeMillis());
         LocalRecord lr = null;
         lr = localRecordMapper.selectOne(Wrappers.<LocalRecord>lambdaQuery().eq(LocalRecord::getName, user.getName()).eq(LocalRecord::getDate, date));
@@ -54,7 +53,7 @@ public class UserController {
         userMapper.insert(user);
         return Result.success();
     }
-    @PostMapping
+    @PostMapping("/save")
     public Result<?> save(@RequestBody User user) {
         if(user.getPwd() == null) {
             user.setPwd("123456");
@@ -62,12 +61,12 @@ public class UserController {
         userMapper.insert(user);
         return Result.success();
     }
-    @PutMapping
+    @PutMapping("/update")
     public Result<?> update(@RequestBody User user) {
         userMapper.updateById(user);
         return Result.success();
     }
-    @GetMapping
+    @GetMapping("find_person_list")
     public Result<?> findPersonList(@RequestParam(defaultValue = "") String search) {
         LambdaQueryWrapper<User> wrappers = Wrappers.<User>lambdaQuery();
         if(!search.equals("")) {

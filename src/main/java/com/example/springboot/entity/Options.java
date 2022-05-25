@@ -13,6 +13,9 @@ public class Options {
 	@TableId(type= IdType.AUTO)
 	private Integer id;
 
-	private String text;
+	private String optionText;
 
+	private Integer questionId;
+
+	private String isCorrect;
 }

@@ -26,15 +26,14 @@ public class Question {
 	private String clazzCode;
 
 	@Column(name = "ac_scores")
-	private Double acScores;
+	private Integer acScores;
 
 	@Column(name = "tot_scores")
-	private Double totScores;
-
-	@Column(name = "default_scores")
-	private Double defaultScores;
+	private Integer totScores;
 
 	@Column(name = "difficulty_ratio")
 	private Double difficultyRatio;
 
+	@Column(name = "difficulty_scores")
+	private Double difficultyScores;
 }

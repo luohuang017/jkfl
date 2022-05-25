@@ -19,10 +19,9 @@ public class StuClazz {
 	@Column(name = "clazz_id")
 	private Integer clazzId;
 
-	@Column(name = "stu_code")
-	private String stuCode;
-
 	@Column(name = "stu_name")
-	private String stuName;
+	private Integer stuName;
 
+	@Column(name = "stu_code")
+	private Integer stuCode;
 }
