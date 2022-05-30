@@ -2,7 +2,7 @@ package com.example.springboot.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.example.springboot.common.Result;
+import com.example.springboot.result.Result;
 import com.example.springboot.entity.*;
 import com.example.springboot.mapper.*;
 import org.springframework.web.bind.annotation.*;
