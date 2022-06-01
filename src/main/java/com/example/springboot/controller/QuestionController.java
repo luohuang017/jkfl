@@ -66,8 +66,8 @@ public class QuestionController {
         return Result.success();
     }
 
-    @PostMapping("/find_class_stu_list")
-    public Result<?> findClassStuList(@RequestBody Question question) {
+    @PostMapping("/find_question_options_list")
+    public Result<?> findQuestionOptionsList(@RequestBody Question question) {
         LambdaQueryWrapper<Options> wrappers = Wrappers.<Options>lambdaQuery();
         wrappers.eq(Options::getQuestionId, question.getId());
         List<Options> userList = optionsMapper.selectList(wrappers);
