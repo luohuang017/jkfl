@@ -132,7 +132,6 @@ public class ExamController {
         }
         return Result.success();
     }
-
     @PostMapping("/find_paper_list")
     public Result<?> findPaperList(@RequestBody Exam exam) {
         LambdaQueryWrapper<StuAnswer> wrappers = Wrappers.<StuAnswer>lambdaQuery();
