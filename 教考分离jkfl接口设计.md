@@ -1,8 +1,16 @@
 # 教考分离jkfl接口设计
 
+
+
+
+
 [TOC]
 
+
+
 ## 学生管理
+
+
 
 ### 学生注册
 
@@ -382,7 +390,587 @@
 
 
 
+
+
+## 用户管理
+
+
+
+### 用户登录
+
+```
+请求方式：POST
+接口地址：localhost:8765/user/login
+```
+
+```json
+传入格式：
+{
+    "code":"123",
+    "pwd":"123"
+}
+```
+
+```
+正确返回Json：
+{
+    "code": "0",
+    "msg": "成功",
+    "data": {
+        "id": 10,
+        "code": "123",
+        "name": "123",
+        "pwd": "123",
+        "sex": null,
+        "userType": "student",
+        "fullname": null
+    }
+}
+错误返回Json：
+{
+    "code": "-1",
+    "msg": "错误信息",
+    "data": null
+}
+```
+
+
+
+### 添加用户
+
+```
+请求方式：POST
+接口地址：localhost:8765/user/add_user
+```
+
+```json
+传入格式：
+{
+    "code":"333",
+    "name":"333",
+    "pwd":"123",
+    "sex":"男",
+    "userType":"teacher",
+    "fullname":"333"
+}
+```
+
+```
+正确返回Json：
+{
+    "code": "0",
+    "msg": "成功",
+    "data": null
+}
+错误返回Json：
+{
+    "code": "-1",
+    "msg": "错误信息",
+    "data": null
+}
+```
+
+
+
+### 删除用户
+
+```
+请求方式：POST
+接口地址：localhost:8765/user/delete_user
+```
+
+```json
+传入格式：
+{
+    "id":1
+}
+```
+
+```
+正确返回Json：
+{
+    "code": "0",
+    "msg": "成功",
+    "data": null
+}
+错误返回Json：
+{
+    "code": "-1",
+    "msg": "错误信息",
+    "data": null
+}
+```
+
+
+
+### 修改用户信息
+
+```
+请求方式：POST
+接口地址：localhost:8765/user/update_userInfo
+```
+
+```json
+传入格式：
+{
+    "id":10,
+    "code":"333",
+    "name":"333",
+    "pwd":"123",
+    "sex":"男",
+    "userType":"teacher",
+    "fullname":"333"
+}
+```
+
+```
+正确返回Json：
+{
+    "code": "0",
+    "msg": "成功",
+    "data": null
+}
+错误返回Json：
+{
+    "code": "-1",
+    "msg": "错误信息",
+    "data": null
+}
+```
+
+
+
+### 查询用户列表
+
+```
+请求方式：POST
+接口地址：localhost:8765/user/find_user_list
+```
+
+```json
+传入格式：
+1个Requestparam
+"search":y
+
+```
+
+```
+正确返回Json：
+{
+    "code": "0",
+    "msg": "成功",
+    "data": [
+        {
+            "id": 6,
+            "code": "31901006",
+            "name": "yyy",
+            "pwd": "123",
+            "sex": "女",
+            "userType": "student",
+            "fullname": "yyy"
+        }
+    ]
+}
+错误返回Json：
+{
+    "code": "-1",
+    "msg": "错误信息",
+    "data": null
+}
+```
+
+
+
+
+
+## 班级管理
+
+
+
+### 添加课程
+
+```
+请求方式：POST
+接口地址：localhost:8765/class/add_class
+```
+
+```json
+传入格式：
+{
+    "teacherId":2,
+    "code":"0001",
+    "name":"线代",
+    "isClose":"0"
+}
+```
+
+```
+正确返回Json：
+{
+    "code": "0",
+    "msg": "成功",
+    "data": null
+}
+错误返回Json：
+{
+    "code": "-1",
+    "msg": "错误信息",
+    "data": null
+}
+```
+
+
+
+### 删除课程
+
+```
+请求方式：POST
+接口地址：localhost:8765/class/delete_cass
+```
+
+```json
+传入格式：
+{
+    "id":2
+}
+```
+
+```
+正确返回Json：
+{
+    "code": "0",
+    "msg": "成功",
+    "data": null
+}
+错误返回Json：
+{
+    "code": "-1",
+    "msg": "错误信息",
+    "data": null
+}
+```
+
+
+
+### 更新课程信息
+
+```
+请求方式：POST
+接口地址：localhost:8765/class/update_class_info
+```
+
+```json
+传入格式：
+{
+    "id":1,
+    "teacherId":2,
+    "code":"0001",
+    "name":"线代",
+    "isClose":"0"
+}
+```
+
+```
+正确返回Json：
+{
+    "code": "0",
+    "msg": "成功",
+    "data": null
+}
+错误返回Json：
+{
+    "code": "-1",
+    "msg": "错误信息",
+    "data": null
+}
+```
+
+
+
+### 查询课程列表
+
+```
+请求方式：POST
+接口地址：localhost:8765/class/find_class_list
+```
+
+```json
+传入格式：
+1个param
+"search":线
+```
+
+```
+正确返回Json：
+{
+    "code": "0",
+    "msg": "成功",
+    "data": [
+        {
+            "id": 1,
+            "teacherId": 2,
+            "code": "0001",
+            "name": "线代",
+            "isClose": 0
+        }
+    ]
+}
+错误返回Json：
+{
+    "code": "-1",
+    "msg": "错误信息",
+    "data": null
+}
+```
+
+
+
+### 添加课程学生
+
+```
+请求方式：POST
+接口地址：localhost:8765/class/add_class_stu
+```
+
+```json
+传入格式：
+两个Requestparam
+"clazzId":1,
+"studentId":9
+```
+
+```
+正确返回Json：
+{
+    "code": "0",
+    "msg": "成功",
+    "data": null
+}
+错误返回Json：
+{
+    "code": "-1",
+    "msg": "错误信息",
+    "data": null
+}
+```
+
+
+
+### 删除课程学生
+
+```
+请求方式：POST
+接口地址：localhost:8765/class/delete_class_stu
+```
+
+```json
+传入格式：
+两个Requestparam
+"clazzId":1,
+"studentId":9
+```
+
+```
+正确返回Json：
+{
+    "code": "0",
+    "msg": "成功",
+    "data": null
+}
+错误返回Json：
+{
+    "code": "-1",
+    "msg": "错误信息",
+    "data": null
+}
+```
+
+
+
+### 查询课程学生
+
+```
+请求方式：POST
+接口地址：localhost:8765/class/find_class_stu_list
+```
+
+```json
+传入格式：
+两个Requestparam
+"clazzId":1,
+"search":yy
+```
+
+```
+正确返回Json：
+{
+    "code": "0",
+    "msg": "成功",
+    "data": [
+        {
+            "id": 6,
+            "stuId": 6,
+            "clazzId": 1,
+            "stuCode": "31901006",
+            "stuName": "yyy"
+        }
+    ]
+}
+错误返回Json：
+{
+    "code": "-1",
+    "msg": "错误信息",
+    "data": null
+}
+```
+
+
+
+## 通知管理
+
+
+
+### 发布通知
+
+```
+请求方式：POST
+接口地址：localhost:8765/notice/publish_notice
+```
+
+```json
+传入格式：
+{
+    "clazzId":1,
+    "text":"通知内容"
+}
+```
+
+```
+正确返回Json：
+{
+    "code": "0",
+    "msg": "成功",
+    "data": null
+}
+错误返回Json：
+{
+    "code": "-1",
+    "msg": "错误信息",
+    "data": null
+}
+```
+
+
+
+### 删除通知
+
+```
+请求方式：POST
+接口地址：localhost:8765/notice/delete_notice
+```
+
+```json
+传入格式：
+{
+    "id":1
+}
+```
+
+```
+正确返回Json：
+{
+    "code": "0",
+    "msg": "成功",
+    "data": null
+}
+错误返回Json：
+{
+    "code": "-1",
+    "msg": "错误信息",
+    "data": null
+}
+```
+
+
+
+### 修改通知
+
+```
+请求方式：POST
+接口地址：localhost:8765/notice/update_notice
+```
+
+```json
+传入格式：
+{
+    "id":2,
+    "clazzId":1,
+    "text":"通知内容"
+}
+```
+
+```
+正确返回Json：
+{
+    "code": "0",
+    "msg": "成功",
+    "data": null
+}
+错误返回Json：
+{
+    "code": "-1",
+    "msg": "错误信息",
+    "data": null
+}
+```
+
+
+
+### 查询通知列表
+
+```
+请求方式：POST
+接口地址：localhost:8765/notice/find_notice_list
+```
+
+```json
+传入格式：
+{
+    "search":"通知"
+}
+```
+
+```
+正确返回Json：
+{
+    "code": "0",
+    "msg": "成功",
+    "data": [
+        {
+            "id": 2,
+            "clazzId": 1,
+            "text": "通知内容"
+        },
+        {
+            "id": 3,
+            "clazzId": 1,
+            "text": "通知内容"
+        }
+    ]
+}
+错误返回Json：
+{
+    "code": "-1",
+    "msg": "错误信息",
+    "data": null
+}
+```
+
+
+
 ## 问题管理
+
+
 
 ### 添加问题
 
@@ -462,7 +1050,7 @@
 ```json
 传入格式：
 {
-    "id":2,
+    "id":2
     "text":"3+5=?",
     "img":"address",
     "category":"xz/zg",
@@ -499,9 +1087,9 @@
 
 ```json
 传入格式：
-{
-    "search":"1"
-}
+1个requestparam
+"search":1
+
 ```
 
 ```
@@ -636,7 +1224,7 @@
 
 ```
 请求方式：POST
-接口地址：localhost:8765/question/find_class_stu_list
+接口地址：localhost:8765/question/find_question_options_list
 ```
 
 ```json
