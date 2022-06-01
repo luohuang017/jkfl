@@ -29,8 +29,8 @@ public class NoticeController {
     }
 
     @PostMapping("/delete_notice")
-    public Result<?> deleteNotice(@RequestParam int noticeId) {
-        noticeMapper.deleteById(noticeId);
+    public Result<?> deleteNotice(@RequestBody Notice notice) {
+        noticeMapper.deleteById(notice.getId());
         return Result.success();
     }
 
@@ -40,8 +40,8 @@ public class NoticeController {
         return Result.success();
     }
 
-    @GetMapping("/find_class_stu_list")
-    public Result<?> findClassStuList(@RequestParam(defaultValue = "") String search) {
+    @PostMapping("/find_notice_list")
+    public Result<?> findNoticeList(@RequestParam(defaultValue = "") String search) {
         LambdaQueryWrapper<Notice> wrappers = Wrappers.<Notice>lambdaQuery();
         wrappers.like(Notice::getText, search);
         List<Notice> userList = noticeMapper.selectList(wrappers);

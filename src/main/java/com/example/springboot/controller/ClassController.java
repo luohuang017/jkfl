@@ -7,6 +7,7 @@ import com.example.springboot.entity.StuClazz;
 import com.example.springboot.entity.User;
 import com.example.springboot.mapper.ClazzMapper;
 import com.example.springboot.mapper.StuClazzMapper;
+import com.example.springboot.mapper.UserMapper;
 import com.example.springboot.result.Result;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,20 +23,17 @@ public class ClassController {
     ClazzMapper clazzMapper;
     @Resource
     StuClazzMapper stuClazzMapper;
-
+    @Resource
+    UserMapper userMapper;
     @PostMapping("/add_class")
     public Result<?> addClass(@RequestBody Clazz clazz) {
-//        Clazz res = clazzMapper.selectOne(Wrappers.<Clazz>lambdaQuery().eq(Clazz::getName, clazz.getName()).eq(Clazz::getTeacherId, clazz.getTeacherId()));
-//        if(res != null) {
-//            return Result.error("-1", "该老师课程已存在");
-//        }
         clazzMapper.insert(clazz);
         return Result.success();
     }
 
     @PostMapping("/delete_class")
-    public Result<?> deleteClass(@RequestParam Integer clazzId) {
-        clazzMapper.deleteById(clazzId);
+    public Result<?> deleteClass(@RequestBody Clazz clazz) {
+        clazzMapper.deleteById(clazz.getId());
         return Result.success();
     }
 
@@ -45,7 +43,7 @@ public class ClassController {
         return Result.success();
     }
 
-    @GetMapping("/find_class_list")
+    @PostMapping("/find_class_list")
     public Result<?> findClassList(@RequestParam(defaultValue = "") String search) {
         LambdaQueryWrapper<Clazz> wrappers = Wrappers.<Clazz>lambdaQuery();
         wrappers.like(Clazz::getName, search).
@@ -57,9 +55,12 @@ public class ClassController {
 
     @PostMapping("/add_class_stu")
     public Result<?> addClassStu(@RequestParam Integer clazzId, @RequestParam Integer studentId) {
+        User user=userMapper.selectById(studentId);
         StuClazz stuClazz = new StuClazz();
         stuClazz.setStuId(studentId);
         stuClazz.setClazzId(clazzId);
+        stuClazz.setStuCode(user.getCode());
+        stuClazz.setStuName(user.getName());
         stuClazzMapper.insert(stuClazz);
         return Result.success();
     }
@@ -77,14 +78,13 @@ public class ClassController {
         return Result.success();
     }
 
-    @GetMapping("/find_class_stu_list")
-    public Result<?> findClassStuList(@RequestParam(defaultValue = "") String clazzId,
+    @PostMapping("/find_class_stu_list")
+    public Result<?> findClassStuList(@RequestParam(defaultValue = "") Integer clazzId,
                                       @RequestParam(defaultValue = "") String search) {
         LambdaQueryWrapper<StuClazz> wrappers = Wrappers.<StuClazz>lambdaQuery();
         wrappers.eq(StuClazz::getClazzId, clazzId);
         if(!search.equals("")) {
-            wrappers.like(StuClazz::getStuCode, search).
-                    or().like(StuClazz::getStuName, search);
+            wrappers.like(StuClazz::getStuCode, search).or().like(StuClazz::getStuName, search);
         }
         List<StuClazz> userList = stuClazzMapper.selectList(wrappers);
         return Result.success(userList);
