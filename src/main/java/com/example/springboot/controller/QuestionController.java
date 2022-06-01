@@ -38,7 +38,7 @@ public class QuestionController {
         return Result.success();
     }
 
-    @GetMapping("/find_question_list")
+    @PostMapping("/find_question_list")
     public Result<?> findQuestionList(@RequestParam(defaultValue = "") String search) {
         LambdaQueryWrapper<Question> wrappers = Wrappers.<Question>lambdaQuery();
         wrappers.like(Question::getText, search).
@@ -66,7 +66,7 @@ public class QuestionController {
         return Result.success();
     }
 
-    @GetMapping("/find_class_stu_list")
+    @PostMapping("/find_class_stu_list")
     public Result<?> findClassStuList(@RequestBody Question question) {
         LambdaQueryWrapper<Options> wrappers = Wrappers.<Options>lambdaQuery();
         wrappers.eq(Options::getQuestionId, question.getId());

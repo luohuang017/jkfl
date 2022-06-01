@@ -8,21 +8,18 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 @Data
-@Table(name = "stu_clazz")
-public class StuClazz {
+@Table(name = "question_option")
+public class QuestionOption {
 	@TableId(type= IdType.AUTO)
 	private Integer id;
 
-	@Column(name = "stu_id")
-	private Integer stuId;
+	@Column(name = "question_id")
+	private Integer questionId;
 
-	@Column(name = "clazz_id")
-	private Integer clazzId;
+	@Column(name = "option_id")
+	private Integer optionId;
 
-	@Column(name = "stu_code")
-	private String stuCode;
-
-	@Column(name = "stu_name")
-	private String stuName;
+	@Column(name = "is_correct")
+	private Integer isCorrect;
 
 }

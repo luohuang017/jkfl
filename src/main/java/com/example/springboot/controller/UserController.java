@@ -21,18 +21,20 @@ public class UserController {
     @Resource
     LocalRecordMapper localRecordMapper;
     @PostMapping("/login")
-    public Result<?> login(@RequestBody User user) {
+    public Result<?> login(@RequestBody User user) throws ParseException {
         User res = userMapper.selectOne(Wrappers.<User>lambdaQuery().eq(User::getName, user.getName()).eq(User::getPwd, user.getPwd()));
         if(res == null) {
             return Result.error("-1", "用户名或密码错误");
         }
-        // 插入登录记录
         Timestamp date =  new Timestamp(System.currentTimeMillis());
-        LocalRecord localRecord = new LocalRecord();
-        localRecord.setName(user.getName());
-        localRecord.setDate(date);
-        localRecordMapper.insert(localRecord);
-
+        LocalRecord lr = null;
+        lr = localRecordMapper.selectOne(Wrappers.<LocalRecord>lambdaQuery().eq(LocalRecord::getName, user.getName()).eq(LocalRecord::getDate, date));
+        if(lr == null) {
+            LocalRecord localRecord = new LocalRecord();
+            localRecord.setName(user.getName());
+            localRecord.setDate(date);
+            localRecordMapper.insert(localRecord);
+        }
         return Result.success(res);
     }
     @PostMapping("/register")
@@ -65,12 +67,8 @@ public class UserController {
         return Result.success();
     }
     @GetMapping("find_person_list")
-    public Result<?> findPersonList(@RequestParam(defaultValue = "") String type,
-            @RequestParam(defaultValue = "") String search) {
+    public Result<?> findPersonList(@RequestParam(defaultValue = "") String search) {
         LambdaQueryWrapper<User> wrappers = Wrappers.<User>lambdaQuery();
-        if(!type.equals("")) {
-            wrappers.eq(User::getUserType, type);
-        }
         if(!search.equals("")) {
             wrappers.like(User::getName, search).or().like(User::getCode, search);
         }

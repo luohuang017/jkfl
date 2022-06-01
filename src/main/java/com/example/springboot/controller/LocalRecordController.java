@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
-
 @RestController
 @RequestMapping("/local_record")
 public class LocalRecordController {
@@ -21,7 +20,6 @@ public class LocalRecordController {
     @GetMapping
     public Result<?> find(@RequestParam String name,
                           @RequestParam Long dateTime) {
-//        System.out.println(12313);
         LambdaQueryWrapper<LocalRecord> wrappers = Wrappers.<LocalRecord>lambdaQuery();
         Date date = new Date(dateTime);
         wrappers.eq(LocalRecord::getName, name);
@@ -33,7 +31,7 @@ public class LocalRecordController {
 //            System.out.print(e.getDate() + "  ");
 //            long t = e.getDate().getTime() / dayTime * dayTime;
 //            System.out.println(t);
-//            System.out.println(e.getDate());
+            System.out.println(e.getDate());
             dayList[(int) ((e.getDate().getTime() - dateTime) / dayTime)] = 1;
         }
         return Result.success(dayList);
