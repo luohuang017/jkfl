@@ -25,7 +25,10 @@ public class ExamController {
     StuAnswerMapper stuAnswerMapper;
     @Resource
     StuClazzMapper stuClazzMapper;
-
+    @Resource
+    StuAnswerOptionMapper stuAnswerOptionMapper;
+    @Resource
+    OptionsMapper optionsMapper;
     @PostMapping("/add_exam")
     public Result<?> addExam(@RequestBody Map<String, Object> models) throws Exception {
         Exam exam = JsonXMLUtils.map2obj((Map<String, Object>) models.get("exam"), Exam.class);
@@ -177,8 +180,20 @@ public class ExamController {
                     stuAnswer.setCorrectAnswer(question.getSampleAnswer());
                     stuAnswer.setDefaultScores(question.getDefaultScores());
                     stuAnswerMapper.insert(stuAnswer);
+                    LambdaQueryWrapper<StuAnswer> tmp = Wrappers.<StuAnswer>lambdaQuery();
+                    tmp.eq(StuAnswer::getQuestionId, stuAnswer.getQuestionId()).eq(StuAnswer::getExamId, stuAnswer.getExamId()).eq(StuAnswer::getStuId, stuAnswer.getStuId());
+                    stuAnswer=stuAnswerMapper.selectOne(tmp);
+                    LambdaQueryWrapper<Options> optionWrappers = Wrappers.<Options>lambdaQuery();
+                    optionWrappers.eq(Options::getQuestionId, question.getId());
+                    List<Options> optionsList = optionsMapper.selectList(optionWrappers);
+                    for(Options options:optionsList){
+                        StuAnswerOption stuAnswerOption = new StuAnswerOption();
+                        stuAnswerOption.setStuAnswerId(stuAnswer.getId());
+                        stuAnswerOption.setOptionText(options.getOptionText());
+                        stuAnswerOptionMapper.insert(stuAnswerOption);
+                    }
                 }
-                List<Question> zgTmpList = xzLists.get(levelArr[i]);
+                List<Question> zgTmpList = zgLists.get(levelArr[i]);
                 for(int j = 0; j < zgCnt[i]; j++) {
                     Question question = zgTmpList.get(j);
                     StuAnswer stuAnswer = new StuAnswer();
@@ -191,6 +206,18 @@ public class ExamController {
                     stuAnswer.setCorrectAnswer(question.getSampleAnswer());
                     stuAnswer.setDefaultScores(question.getDefaultScores());
                     stuAnswerMapper.insert(stuAnswer);
+                    LambdaQueryWrapper<StuAnswer> tmp = Wrappers.<StuAnswer>lambdaQuery();
+                    tmp.eq(StuAnswer::getQuestionId, stuAnswer.getQuestionId()).eq(StuAnswer::getExamId, stuAnswer.getExamId()).eq(StuAnswer::getStuId, stuAnswer.getStuId());
+                    stuAnswer=stuAnswerMapper.selectOne(tmp);
+                    LambdaQueryWrapper<Options> optionWrappers = Wrappers.<Options>lambdaQuery();
+                    optionWrappers.eq(Options::getQuestionId, question.getId());
+                    List<Options> optionsList = optionsMapper.selectList(optionWrappers);
+                    for(Options options:optionsList){
+                        StuAnswerOption stuAnswerOption = new StuAnswerOption();
+                        stuAnswerOption.setStuAnswerId(stuAnswer.getId());
+                        stuAnswerOption.setOptionText(options.getOptionText());
+                        stuAnswerOptionMapper.insert(stuAnswerOption);
+                    }
                 }
             }
         }
