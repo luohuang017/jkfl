@@ -249,6 +249,18 @@ public class ExamController {
                 stuAnswer.setCorrectAnswer(question.getSampleAnswer());
                 stuAnswer.setDefaultScores(question.getDefaultScores());
                 stuAnswerMapper.insert(stuAnswer);
+                LambdaQueryWrapper<StuAnswer> tmp = Wrappers.<StuAnswer>lambdaQuery();
+                tmp.eq(StuAnswer::getQuestionId, stuAnswer.getQuestionId()).eq(StuAnswer::getExamId, stuAnswer.getExamId()).eq(StuAnswer::getStuId, stuAnswer.getStuId());
+                stuAnswer=stuAnswerMapper.selectOne(tmp);
+                LambdaQueryWrapper<Options> optionWrappers = Wrappers.<Options>lambdaQuery();
+                optionWrappers.eq(Options::getQuestionId, question.getId());
+                List<Options> optionsList = optionsMapper.selectList(optionWrappers);
+                for(Options options:optionsList){
+                    StuAnswerOption stuAnswerOption = new StuAnswerOption();
+                    stuAnswerOption.setStuAnswerId(stuAnswer.getId());
+                    stuAnswerOption.setOptionText(options.getOptionText());
+                    stuAnswerOptionMapper.insert(stuAnswerOption);
+                }
             }
         }
         return Result.success();
