@@ -1,9 +1,5 @@
 # 教考分离jkfl接口设计
 
-
-
-
-
 [TOC]
 
 
@@ -507,7 +503,7 @@
 
 ```
 请求方式：POST
-接口地址：localhost:8765/user/update_userInfo
+接口地址：localhost:8765/user/update_user_info
 ```
 
 ```json
@@ -540,6 +536,44 @@
 
 
 
+### 查询用户信息
+
+```
+请求方式：POST
+接口地址：localhost:8765/user/find_user_info
+```
+
+```json
+传入格式：
+1个Requestparam
+"userId": 6
+```
+
+```
+正确返回Json：
+{
+    "code": "0",
+    "msg": "成功",
+    "data": {
+        "id": 6,
+        "code": "31901006",
+        "name": "yyy",
+        "pwd": "123",
+        "sex": "女",
+        "userType": "student",
+        "fullname": "yyy"
+    }
+}
+错误返回Json：
+{
+    "code": "-1",
+    "msg": "错误信息",
+    "data": null
+}
+```
+
+
+
 ### 查询用户列表
 
 ```
@@ -551,7 +585,6 @@
 传入格式：
 1个Requestparam
 "search":y
-
 ```
 
 ```
@@ -687,6 +720,43 @@
 
 
 
+### 查询课程信息
+
+```
+请求方式：POST
+接口地址：localhost:8765/class/find_class_info
+```
+
+```json
+传入格式：
+1个Requestparam
+"clazzId":1,
+```
+
+```
+正确返回Json：
+{
+    "code": "0",
+    "msg": "成功",
+    "data": {
+            "id": 1,
+            "teacherId": 2,
+            "code": "0001",
+            "name": "线代",
+            "isClose": 0
+        }
+    ]
+}
+错误返回Json：
+{
+    "code": "-1",
+    "msg": "错误信息",
+    "data": null
+}
+```
+
+
+
 ### 查询课程列表
 
 ```
@@ -696,7 +766,8 @@
 
 ```json
 传入格式：
-1个param
+两个Requestparam
+"teacherId":2,
 "search":线
 ```
 
@@ -736,7 +807,7 @@
 传入格式：
 两个Requestparam
 "clazzId":1,
-"studentId":9
+"studentCode": "31901019"
 ```
 
 ```
@@ -1389,7 +1460,42 @@
 }
 ```
 
-### 
+### 查询考试信息
+
+```
+请求方式：POST
+接口地址：localhost:8765/exam/find_exam_info
+```
+
+```json
+传入格式：
+1个Requestparam
+"examId": 2,
+```
+
+```
+正确返回Json：
+{
+    "code": "0",
+    "msg": "成功",
+    "data": {
+            "id": 2,
+            "code": "xxx",
+            "clazzId": 1,
+            "startTime": "2022-06-01",
+            "endTime": "2022-06-02"
+        }
+    ]
+}
+错误返回Json：
+{
+    "code": "-1",
+    "msg": "错误信息",
+    "data": null
+}
+```
+
+
 
 ### 搜索考试列表
 
@@ -1588,4 +1694,3 @@
     "data": null
 }
 ```
-
