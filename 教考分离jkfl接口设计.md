@@ -729,8 +729,8 @@
 
 ```json
 传入格式：
-1个Requestparam
-"clazzId":1,
+2个Requestparam
+"clazzId":1, "clazzCode":"",
 ```
 
 ```
@@ -1554,9 +1554,9 @@
     "exam":{
         "id":2
     },
-    "score":80.0,
-    "xzNum":1,
-    "zgNum":1
+    "score":"80.0",
+    "xzNum":"1",
+    "zgNum":"1"
 }
 ```
 
@@ -1666,7 +1666,7 @@
 
 ```
 请求方式：POST
-接口地址：localhost:8765/exam/submit_check_anwser
+接口地址：localhost:8765/exam/submit_check_answer
 ```
 
 ```json
@@ -1675,8 +1675,7 @@
     "stuAnswer":{
         "id":114
     },
-    "score":5.0
-
+    "score":"5.0"
 }
 ```
 
