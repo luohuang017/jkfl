@@ -43,7 +43,7 @@ public class NoticeController {
     @PostMapping("/find_notice_list")
     public Result<?> findNoticeList(@RequestParam(defaultValue = "") String search) {
         LambdaQueryWrapper<Notice> wrappers = Wrappers.<Notice>lambdaQuery();
-        wrappers.like(Notice::getText, search);
+        wrappers.like(Notice::getContent, search);
         List<Notice> userList = noticeMapper.selectList(wrappers);
         return Result.success(userList);
     }

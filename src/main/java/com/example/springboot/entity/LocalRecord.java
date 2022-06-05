@@ -13,7 +13,7 @@ public class LocalRecord {
 	@TableId(type= IdType.AUTO)
 	private Integer id;
 
-	private String name;
+	private String code;
 
 	private java.util.Date date;
 

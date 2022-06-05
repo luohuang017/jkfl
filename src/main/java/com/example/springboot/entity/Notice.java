@@ -16,6 +16,6 @@ public class Notice {
 	@Column(name = "clazz_id")
 	private Integer clazzId;
 
-	@Column(name = "text")
-	private String text;
+	@Column(name = "content")
+	private String content;
 }

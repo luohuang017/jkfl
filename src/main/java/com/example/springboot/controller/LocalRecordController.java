@@ -18,11 +18,11 @@ public class LocalRecordController {
     @Resource
     LocalRecordMapper localRecordMapper;
     @GetMapping
-    public Result<?> find(@RequestParam String name,
+    public Result<?> find(@RequestParam String code,
                           @RequestParam Long dateTime) {
         LambdaQueryWrapper<LocalRecord> wrappers = Wrappers.<LocalRecord>lambdaQuery();
         Date date = new Date(dateTime);
-        wrappers.eq(LocalRecord::getName, name);
+        wrappers.eq(LocalRecord::getCode, code);
         wrappers.ge(LocalRecord::getDate, date);
         List<LocalRecord> list = localRecordMapper.selectList(wrappers);
         int[] dayList = new int[400];
@@ -31,7 +31,7 @@ public class LocalRecordController {
 //            System.out.print(e.getDate() + "  ");
 //            long t = e.getDate().getTime() / dayTime * dayTime;
 //            System.out.println(t);
-            System.out.println(e.getDate());
+//            System.out.println(e.getDate());
             dayList[(int) ((e.getDate().getTime() - dateTime) / dayTime)] = 1;
         }
         return Result.success(dayList);

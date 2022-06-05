@@ -25,6 +25,7 @@ public class ClassController {
     StuClazzMapper stuClazzMapper;
     @Resource
     UserMapper userMapper;
+
     @PostMapping("/add_class")
     public Result<?> addClass(@RequestBody Clazz clazz) {
         clazzMapper.insert(clazz);
@@ -43,21 +44,45 @@ public class ClassController {
         return Result.success();
     }
 
+    @PostMapping("/find_class_info")
+    public Result<?> findClassInfo(@RequestParam Integer clazzId) {
+        Clazz clazz = clazzMapper.selectById(clazzId);
+        return Result.success(clazz);
+    }
+
     @PostMapping("/find_class_list")
-    public Result<?> findClassList(@RequestParam(defaultValue = "") String search) {
+    public Result<?> findClassList(@RequestParam(defaultValue = "") String teacherId,
+                                   @RequestParam(defaultValue = "") String search) {
         LambdaQueryWrapper<Clazz> wrappers = Wrappers.<Clazz>lambdaQuery();
-        wrappers.like(Clazz::getName, search).
-                or().like(Clazz::getTeacherId, search).
-                or().like(Clazz::getCode, search);
+        if(!search.equals("")) {
+            wrappers.like(Clazz::getName, search).
+                    or().like(Clazz::getTeacherId, search).
+                    or().like(Clazz::getCode, search);
+        }
+        if(!teacherId.equals("")) {
+            wrappers.eq(Clazz::getTeacherId, Integer.parseInt(teacherId));
+        }
         List<Clazz> userList = clazzMapper.selectList(wrappers);
         return Result.success(userList);
     }
 
     @PostMapping("/add_class_stu")
-    public Result<?> addClassStu(@RequestParam Integer clazzId, @RequestParam Integer studentId) {
-        User user=userMapper.selectById(studentId);
+    public Result<?> addClassStu(@RequestParam Integer clazzId, @RequestParam String studentCode) {
+        LambdaQueryWrapper<User> wrappers = Wrappers.<User>lambdaQuery();
+        wrappers.eq(User::getCode, studentCode);
+        User user = userMapper.selectOne(wrappers);
+        if(user == null) {
+            return Result.error("-1", "该学生不存在");
+        }
+        LambdaQueryWrapper<StuClazz> wrappers1 = Wrappers.<StuClazz>lambdaQuery();
+        wrappers1.eq(StuClazz::getStuCode, studentCode);
+        wrappers1.eq(StuClazz::getClazzId, clazzId);
+        StuClazz tempStuClazz = stuClazzMapper.selectOne(wrappers1);
+        if(tempStuClazz != null) {
+            return Result.error("-1", "该学生已在课程内");
+        }
         StuClazz stuClazz = new StuClazz();
-        stuClazz.setStuId(studentId);
+        stuClazz.setStuId(user.getId());
         stuClazz.setClazzId(clazzId);
         stuClazz.setStuCode(user.getCode());
         stuClazz.setStuName(user.getName());

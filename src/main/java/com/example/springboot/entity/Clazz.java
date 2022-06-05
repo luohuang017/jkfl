@@ -17,8 +17,10 @@ public class Clazz {
 	@Column(name = "teacher_id")
 	private Integer teacherId;
 
+	@Column(name = "code")
 	private String code;
 
+	@Column(name = "name")
 	private String name;
 
 	@Column(name = "is_close")

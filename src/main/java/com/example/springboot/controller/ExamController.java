@@ -33,10 +33,10 @@ public class ExamController {
         exam.setClazzId(clazz.getId());
         long startTime = exam.getStartTime().getTime();
         long endTime = exam.getEndTime().getTime();
-        if (startTime < System.currentTimeMillis()) {
+        if(startTime < System.currentTimeMillis()) {
             return Result.error("-1", "开始时间需要晚于当前时间");
         }
-        if (startTime > endTime) {
+        if(startTime > endTime) {
             return Result.error("-1", "结束时间需要晚于开始时间");
         }
         examMapper.insert(exam);
@@ -45,8 +45,8 @@ public class ExamController {
 
     @PostMapping("/delete_exam")
     public Result<?> deleteExam(@RequestBody Exam exam) {
-        Exam res=examMapper.selectById(exam.getId());
-        if(res==null){
+        Exam res = examMapper.selectById(exam.getId());
+        if(res == null) {
             return Result.error("-1", "该考试不存在");
         }
         LambdaQueryWrapper<StuAnswer> wrappers = Wrappers.<StuAnswer>lambdaQuery();
@@ -58,24 +58,45 @@ public class ExamController {
 
     @PostMapping("/update_exam")
     public Result<?> updateExam(@RequestBody Exam exam) throws Exception {
-        Exam res=examMapper.selectById(exam.getId());
-        if(res==null){
+        Exam res = examMapper.selectById(exam.getId());
+        if(res == null) {
             return Result.error("-1", "该考试不存在");
         }
+        long startTime = exam.getStartTime().getTime();
+        long endTime = exam.getEndTime().getTime();
+        if(startTime < System.currentTimeMillis()) {
+            return Result.error("-1", "开始时间需要晚于当前时间");
+        }
+        if(startTime > endTime) {
+            return Result.error("-1", "结束时间需要晚于开始时间");
+        }
+        System.out.println(exam.getStartTime());
         examMapper.updateById(exam);
         return Result.success();
     }
 
+    @PostMapping("/find_exam_info")
+    public Result<?> findExamInfo(@RequestParam Integer examId) {
+        Exam exam = examMapper.selectById(examId);
+        return Result.success(exam);
+    }
+
     @PostMapping("/find_exam_list")
     public Result<?> findExamList(@RequestBody Map<String, Object> models) throws Exception {
-        String search= (String) models.get("search");
-        Clazz clazz = JsonXMLUtils.map2obj((Map<String, Object>) models.get("clazz"), Clazz.class);
+        String search = (String) models.get("search");
+        Object tmpClazz = models.get("clazz");
         LambdaQueryWrapper<Exam> wrappers = Wrappers.<Exam>lambdaQuery();
-        wrappers.like(Exam::getCode, search).eq(Exam::getClazzId, clazz.getId());
-        List<Exam> examList = examMapper.selectList(wrappers);
-        if (examList == null) {
-            return Result.error("-1", "这样的考试不存在");
+        if(tmpClazz != null) {
+            Clazz clazz = JsonXMLUtils.map2obj((Map<String, Object>) models.get("clazz"), Clazz.class);
+            wrappers.eq(Exam::getClazzId, clazz.getId());
         }
+        if(search != null && !search.equals("")) {
+            wrappers.like(Exam::getCode, search);
+        }
+        List<Exam> examList = examMapper.selectList(wrappers);
+//        if (examList == null) {
+//            return Result.error("-1", "这样的考试不存在");
+//        }
         return Result.success(examList);
     }
 
@@ -99,27 +120,25 @@ public class ExamController {
         LambdaQueryWrapper<Question> zgWrappers = Wrappers.<Question>lambdaQuery();
         zgWrappers.eq(Question::getCategory, "zg");
         List<Question> zgQuestionList = questionMapper.selectList(zgWrappers);
-
         List<List<Question>> xzLists = new ArrayList<>();
         List<List<Question>> zgLists = new ArrayList<>();
         //题目总共分为10个档次
-        for (int i = 0; i <= 10; i++) {
+        for(int i = 0; i <= 10; i++) {
             List<Question> questionList = new ArrayList<>();
             xzLists.add(questionList);
         }
-        for (int i = 0; i <= 10; i++) {
+        for(int i = 0; i <= 10; i++) {
             List<Question> questionList = new ArrayList<>();
             zgLists.add(questionList);
         }
-        for (Question question : xzQuestionList) {
+        for(Question question : xzQuestionList) {
             int level = (int) (question.getDifficultyRatio() / 0.1);
             xzLists.get(level).add(question);
         }
-        for (Question question : zgQuestionList) {
+        for(Question question : zgQuestionList) {
             int level = (int) (question.getDifficultyRatio() / 0.1);
             zgLists.get(level).add(question);
         }
-
         //根据档次划分题目数量
         int level = (int) (score / 10);
         int[] levelArr = new int[5];
@@ -127,31 +146,26 @@ public class ExamController {
         levelArr[2] = Math.max(level - 1, 0);
         levelArr[3] = Math.max(level - 2, 0);
         levelArr[4] = level;
-
         int[] xzCnt = new int[5];
         xzCnt[1] = xzNum / 10;
         xzCnt[2] = xzNum * 2 / 10;
         xzCnt[3] = xzNum * 3 / 10;
         xzCnt[4] = xzNum - xzCnt[1] - xzCnt[2] - xzCnt[3];
-
-
         int[] zgCnt = new int[5];
         zgCnt[1] = zgNum / 10;
         zgCnt[2] = zgNum * 2 / 10;
         zgCnt[3] = zgNum * 3 / 10;
         zgCnt[4] = zgNum - zgCnt[1] - zgCnt[2] - zgCnt[3];
-
-
         //根据学生列表分配各自答题卡
-        for (StuClazz stuClazz : studentList) {
+        for(StuClazz stuClazz : studentList) {
             //随机
-            for (int i = 0; i <= 10; i++) {
+            for(int i = 0; i <= 10; i++) {
                 Collections.shuffle(xzLists.get(i));
                 Collections.shuffle(zgLists.get(i));
             }
-            for (int i = 1; i <= 4; i++) {
+            for(int i = 1; i <= 4; i++) {
                 List<Question> xzTmpList = xzLists.get(levelArr[i]);
-                for (int j = 0; j < xzCnt[i]; j++) {
+                for(int j = 0; j < xzCnt[i]; j++) {
                     Question question = xzTmpList.get(j);
                     StuAnswer stuAnswer = new StuAnswer();
                     stuAnswer.setExamId(exam.getId());
@@ -164,9 +178,8 @@ public class ExamController {
                     stuAnswer.setDefaultScores(question.getDefaultScores());
                     stuAnswerMapper.insert(stuAnswer);
                 }
-
                 List<Question> zgTmpList = xzLists.get(levelArr[i]);
-                for (int j = 0; j < zgCnt[i]; j++) {
+                for(int j = 0; j < zgCnt[i]; j++) {
                     Question question = zgTmpList.get(j);
                     StuAnswer stuAnswer = new StuAnswer();
                     stuAnswer.setExamId(exam.getId());
@@ -189,17 +202,16 @@ public class ExamController {
     public Result<?> freeSetQuestion(@RequestBody Map<String, Object> models) throws Exception {
         Clazz clazz = JsonXMLUtils.map2obj((Map<String, Object>) models.get("clazz"), Clazz.class);
         Exam exam = JsonXMLUtils.map2obj((Map<String, Object>) models.get("exam"), Exam.class);
-        List<Question> questionIdList= (List<Question>) models.get("questionList");
+        List<Question> questionIdList = (List<Question>) models.get("questionList");
         String s = JSON.toJSONString(questionIdList); //json转换有问题，需要重新转，并指明类型
         List<Question> questionList = JSON.parseArray(s, Question.class);// 指定转换的类型
-
         LambdaQueryWrapper<StuClazz> wrappers = Wrappers.<StuClazz>lambdaQuery();
         wrappers.eq(StuClazz::getClazzId, clazz.getId());
         List<StuClazz> studentList = stuClazzMapper.selectList(wrappers);
 //        List<Question> questionList= new ArrayList<>();
-        for (StuClazz stuClazz : studentList) {
-            for (int i=0;i<questionList.size();i++) {
-                Question question=questionMapper.selectById(questionList.get(i).getId());
+        for(StuClazz stuClazz : studentList) {
+            for(int i = 0; i < questionList.size(); i++) {
+                Question question = questionMapper.selectById(questionList.get(i).getId());
                 StuAnswer stuAnswer = new StuAnswer();
                 stuAnswer.setExamId(exam.getId());
                 stuAnswer.setQuestionId(question.getId());
@@ -226,7 +238,7 @@ public class ExamController {
     @PostMapping("/submit_check_anwser")
     public Result<?> submitCheckAnwser(@RequestBody Map<String, Object> models) throws Exception {
         StuAnswer tmpStuAnswer = JsonXMLUtils.map2obj((Map<String, Object>) models.get("stuAnswer"), StuAnswer.class);
-        Double score= (Double) models.get("score");
+        Double score = (Double) models.get("score");
         StuAnswer stuAnswer = stuAnswerMapper.selectById(tmpStuAnswer.getId());
         Question question = questionMapper.selectById(stuAnswer.getQuestionId());
         LambdaQueryWrapper<StuScores> wrappers = Wrappers.<StuScores>lambdaQuery();
@@ -234,9 +246,9 @@ public class ExamController {
         StuScores stuScores = stuScoresMapper.selectOne(wrappers);
         LambdaQueryWrapper<StuClazz> clazzSearch = Wrappers.<StuClazz>lambdaQuery();
         clazzSearch.eq(StuClazz::getStuId, stuAnswer.getStuId());
-        StuClazz stuClazz=stuClazzMapper.selectOne(clazzSearch);
-        if(stuScores==null){
-            stuScores=new StuScores();
+        StuClazz stuClazz = stuClazzMapper.selectOne(clazzSearch);
+        if(stuScores == null) {
+            stuScores = new StuScores();
             stuScores.setScores(0.0);
             stuScores.setClazzId(stuClazz.getClazzId());
             stuScores.setExamId(stuAnswer.getExamId());
@@ -245,8 +257,8 @@ public class ExamController {
             stuScores.setState("finish");
             stuScoresMapper.insert(stuScores);
         }
-        stuScores=stuScoresMapper.selectOne(wrappers);
-        if (stuAnswer.getStuScores() != null) {
+        stuScores = stuScoresMapper.selectOne(wrappers);
+        if(stuAnswer.getStuScores() != null) {
             question.setAcScores(question.getAcScores() - stuAnswer.getStuScores());
             question.setTotScores(question.getTotScores() - stuAnswer.getDefaultScores());
             stuScores.setScores(stuScores.getScores() - stuAnswer.getStuScores());
@@ -258,8 +270,6 @@ public class ExamController {
         stuScores.setEndTime(new Date(System.currentTimeMillis()));
         questionMapper.updateById(question);
         stuScoresMapper.updateById(stuScores);
-
-
         return Result.success();
     }
 
