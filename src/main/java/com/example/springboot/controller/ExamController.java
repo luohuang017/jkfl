@@ -18,6 +18,8 @@ public class ExamController {
     @Resource
     ExamMapper examMapper;
     @Resource
+    ClazzMapper clazzMapper;
+    @Resource
     QuestionMapper questionMapper;
     @Resource
     StuScoresMapper stuScoresMapper;
@@ -29,11 +31,16 @@ public class ExamController {
     StuAnswerOptionMapper stuAnswerOptionMapper;
     @Resource
     OptionsMapper optionsMapper;
+
     @PostMapping("/add_exam")
     public Result<?> addExam(@RequestBody Map<String, Object> models) throws Exception {
         Exam exam = JsonXMLUtils.map2obj((Map<String, Object>) models.get("exam"), Exam.class);
         Clazz clazz = JsonXMLUtils.map2obj((Map<String, Object>) models.get("clazz"), Clazz.class);
         exam.setClazzId(clazz.getId());
+        Clazz clazz1 = clazzMapper.selectById(clazz.getId());
+        if(clazz1 == null) {
+            return Result.error("-1", "该课程不存在");
+        }
         long startTime = exam.getStartTime().getTime();
         long endTime = exam.getEndTime().getTime();
         if(startTime < System.currentTimeMillis()) {
@@ -43,7 +50,7 @@ public class ExamController {
             return Result.error("-1", "结束时间需要晚于开始时间");
         }
         examMapper.insert(exam);
-        return Result.success();
+        return Result.success(exam);
     }
 
     @PostMapping("/delete_exam")
@@ -81,6 +88,9 @@ public class ExamController {
     @PostMapping("/find_exam_info")
     public Result<?> findExamInfo(@RequestParam Integer examId) {
         Exam exam = examMapper.selectById(examId);
+        if(exam == null) {
+            return Result.error("-1", "该考试不存在");
+        }
         return Result.success(exam);
     }
 
@@ -108,13 +118,12 @@ public class ExamController {
     public Result<?> randomSetQuestion(@RequestBody Map<String, Object> models) throws Exception {
         Clazz clazz = JsonXMLUtils.map2obj((Map<String, Object>) models.get("clazz"), Clazz.class);
         Exam exam = JsonXMLUtils.map2obj((Map<String, Object>) models.get("exam"), Exam.class);
-        Double score = (Double) models.get("score");
-        Integer xzNum = (Integer) models.get("xzNum");
-        Integer zgNum = (Integer) models.get("zgNum");
+        Double score = Double.parseDouble((String) models.get("score"));
+        Integer xzNum = Integer.parseInt((String) models.get("xzNum"));
+        Integer zgNum = Integer.parseInt((String) models.get("zgNum"));
         LambdaQueryWrapper<StuClazz> wrappers = Wrappers.<StuClazz>lambdaQuery();
         wrappers.eq(StuClazz::getClazzId, clazz.getId());
         List<StuClazz> studentList = stuClazzMapper.selectList(wrappers);
-        Double avgScore = score / 100;
         //筛选选择题
         LambdaQueryWrapper<Question> xzWrappers = Wrappers.<Question>lambdaQuery();
         xzWrappers.eq(Question::getCategory, "xz");
@@ -143,7 +152,7 @@ public class ExamController {
             zgLists.get(level).add(question);
         }
         //根据档次划分题目数量
-        int level = (int) (score / 10);
+        int level = (int) (score * 10);
         int[] levelArr = new int[5];
         levelArr[1] = Math.min(level + 1, 20);
         levelArr[2] = Math.max(level - 1, 0);
@@ -182,11 +191,11 @@ public class ExamController {
                     stuAnswerMapper.insert(stuAnswer);
                     LambdaQueryWrapper<StuAnswer> tmp = Wrappers.<StuAnswer>lambdaQuery();
                     tmp.eq(StuAnswer::getQuestionId, stuAnswer.getQuestionId()).eq(StuAnswer::getExamId, stuAnswer.getExamId()).eq(StuAnswer::getStuId, stuAnswer.getStuId());
-                    stuAnswer=stuAnswerMapper.selectOne(tmp);
+                    stuAnswer = stuAnswerMapper.selectOne(tmp);
                     LambdaQueryWrapper<Options> optionWrappers = Wrappers.<Options>lambdaQuery();
                     optionWrappers.eq(Options::getQuestionId, question.getId());
                     List<Options> optionsList = optionsMapper.selectList(optionWrappers);
-                    for(Options options:optionsList){
+                    for(Options options : optionsList) {
                         StuAnswerOption stuAnswerOption = new StuAnswerOption();
                         stuAnswerOption.setStuAnswerId(stuAnswer.getId());
                         stuAnswerOption.setOptionText(options.getOptionText());
@@ -208,11 +217,11 @@ public class ExamController {
                     stuAnswerMapper.insert(stuAnswer);
                     LambdaQueryWrapper<StuAnswer> tmp = Wrappers.<StuAnswer>lambdaQuery();
                     tmp.eq(StuAnswer::getQuestionId, stuAnswer.getQuestionId()).eq(StuAnswer::getExamId, stuAnswer.getExamId()).eq(StuAnswer::getStuId, stuAnswer.getStuId());
-                    stuAnswer=stuAnswerMapper.selectOne(tmp);
+                    stuAnswer = stuAnswerMapper.selectOne(tmp);
                     LambdaQueryWrapper<Options> optionWrappers = Wrappers.<Options>lambdaQuery();
                     optionWrappers.eq(Options::getQuestionId, question.getId());
                     List<Options> optionsList = optionsMapper.selectList(optionWrappers);
-                    for(Options options:optionsList){
+                    for(Options options : optionsList) {
                         StuAnswerOption stuAnswerOption = new StuAnswerOption();
                         stuAnswerOption.setStuAnswerId(stuAnswer.getId());
                         stuAnswerOption.setOptionText(options.getOptionText());
@@ -222,7 +231,6 @@ public class ExamController {
             }
         }
         return Result.success();
-
     }
 
     @PostMapping("/free_set_question")
@@ -251,11 +259,11 @@ public class ExamController {
                 stuAnswerMapper.insert(stuAnswer);
                 LambdaQueryWrapper<StuAnswer> tmp = Wrappers.<StuAnswer>lambdaQuery();
                 tmp.eq(StuAnswer::getQuestionId, stuAnswer.getQuestionId()).eq(StuAnswer::getExamId, stuAnswer.getExamId()).eq(StuAnswer::getStuId, stuAnswer.getStuId());
-                stuAnswer=stuAnswerMapper.selectOne(tmp);
+                stuAnswer = stuAnswerMapper.selectOne(tmp);
                 LambdaQueryWrapper<Options> optionWrappers = Wrappers.<Options>lambdaQuery();
                 optionWrappers.eq(Options::getQuestionId, question.getId());
                 List<Options> optionsList = optionsMapper.selectList(optionWrappers);
-                for(Options options:optionsList){
+                for(Options options : optionsList) {
                     StuAnswerOption stuAnswerOption = new StuAnswerOption();
                     stuAnswerOption.setStuAnswerId(stuAnswer.getId());
                     stuAnswerOption.setOptionText(options.getOptionText());
@@ -270,14 +278,15 @@ public class ExamController {
     public Result<?> findPaperList(@RequestBody Exam exam) {
         LambdaQueryWrapper<StuAnswer> wrappers = Wrappers.<StuAnswer>lambdaQuery();
         wrappers.eq(StuAnswer::getExamId, exam.getId());
+        wrappers.eq(StuAnswer::getQuestionCategory, "zg");
         List<StuAnswer> StuAnswerList = stuAnswerMapper.selectList(wrappers);
         return Result.success(StuAnswerList);
     }
 
-    @PostMapping("/submit_check_anwser")
-    public Result<?> submitCheckAnwser(@RequestBody Map<String, Object> models) throws Exception {
+    @PostMapping("/submit_check_answer")
+    public Result<?> submitCheckAnswer(@RequestBody Map<String, Object> models) throws Exception {
         StuAnswer tmpStuAnswer = JsonXMLUtils.map2obj((Map<String, Object>) models.get("stuAnswer"), StuAnswer.class);
-        Double score = (Double) models.get("score");
+        Double score = Double.parseDouble((String) models.get("score"));
         StuAnswer stuAnswer = stuAnswerMapper.selectById(tmpStuAnswer.getId());
         Question question = questionMapper.selectById(stuAnswer.getQuestionId());
         LambdaQueryWrapper<StuScores> wrappers = Wrappers.<StuScores>lambdaQuery();
@@ -285,6 +294,8 @@ public class ExamController {
         StuScores stuScores = stuScoresMapper.selectOne(wrappers);
         LambdaQueryWrapper<StuClazz> clazzSearch = Wrappers.<StuClazz>lambdaQuery();
         clazzSearch.eq(StuClazz::getStuId, stuAnswer.getStuId());
+        Exam exam = examMapper.selectById(stuAnswer.getExamId());
+        clazzSearch.eq(StuClazz::getClazzId, exam.getClazzId());
         StuClazz stuClazz = stuClazzMapper.selectOne(clazzSearch);
         if(stuScores == null) {
             stuScores = new StuScores();
@@ -306,7 +317,9 @@ public class ExamController {
         question.setTotScores(question.getTotScores() + stuAnswer.getDefaultScores());
         question.setDifficultyRatio(question.getAcScores() / question.getTotScores());
         stuScores.setScores(stuScores.getScores() + score);
+        stuAnswer.setStuScores(score);
         stuScores.setEndTime(new Date(System.currentTimeMillis()));
+        stuAnswerMapper.updateById(stuAnswer);
         questionMapper.updateById(question);
         stuScoresMapper.updateById(stuScores);
         return Result.success();

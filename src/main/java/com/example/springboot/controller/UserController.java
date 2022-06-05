@@ -90,12 +90,15 @@ public class UserController {
     @PostMapping("/find_user_info")
     public Result<?> findUserInfo(@RequestParam Integer userId) {
         User user = userMapper.selectById(userId);
+        if(user == null) {
+            return Result.error("-1", "该用户不存在");
+        }
         return Result.success(user);
     }
 
     @PostMapping("find_user_list")
     public Result<?> findUserList(@RequestParam(defaultValue = "") String type,
-                                    @RequestParam(defaultValue = "") String search) {
+                                  @RequestParam(defaultValue = "") String search) {
         LambdaQueryWrapper<User> wrappers = Wrappers.<User>lambdaQuery();
         if(!type.equals("")) {
             wrappers.eq(User::getUserType, type);

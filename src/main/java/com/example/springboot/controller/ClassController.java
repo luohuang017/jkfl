@@ -45,8 +45,18 @@ public class ClassController {
     }
 
     @PostMapping("/find_class_info")
-    public Result<?> findClassInfo(@RequestParam Integer clazzId) {
-        Clazz clazz = clazzMapper.selectById(clazzId);
+    public Result<?> findClassInfo(@RequestParam(defaultValue = "") Integer clazzId,
+                                   @RequestParam(defaultValue = "") String clazzCode) {
+        Clazz clazz = null;
+        if(clazzId != 0) clazz = clazzMapper.selectById(clazzId);
+        else if(!clazzCode.equals("")) {
+            LambdaQueryWrapper<Clazz> wrappers = Wrappers.<Clazz>lambdaQuery();
+            wrappers.eq(Clazz::getCode, clazzCode);
+            clazz = clazzMapper.selectOne(wrappers);
+        }
+        if(clazz == null) {
+            return Result.error("-1", "该课程不存在");
+        }
         return Result.success(clazz);
     }
 

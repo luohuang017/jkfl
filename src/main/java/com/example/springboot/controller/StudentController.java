@@ -19,11 +19,15 @@ public class StudentController {
     @Resource
     UserMapper userMapper;
     @Resource
+    ExamMapper examMapper;
+    @Resource
     StuAnswerMapper stuAnswerMapper;
     @Resource
     StuScoresMapper stuScoresMapper;
     @Resource
     StuClazzMapper stuClazzMapper;
+    @Resource
+    QuestionMapper questionMapper;
     @Resource
     StuAnswerOptionMapper stuAnswerOptionMapper;
 
@@ -67,6 +71,43 @@ public class StudentController {
         for(StuAnswer stuAnswer : stuAnswerList) {
             if(stuAnswer.getQuestionCategory().equals("xz")) {
                 if(stuAnswer.getCorrectAnswer().equals(stuAnswer.getAnswerContent())) {
+                    // ----------------
+                    Double score = stuAnswer.getDefaultScores();
+                    Question question = questionMapper.selectById(stuAnswer.getQuestionId());
+                    LambdaQueryWrapper<StuScores> wrappers = Wrappers.<StuScores>lambdaQuery();
+                    wrappers.eq(StuScores::getExamId, stuAnswer.getExamId());
+                    StuScores stuScores = stuScoresMapper.selectOne(wrappers);
+                    LambdaQueryWrapper<StuClazz> clazzSearch = Wrappers.<StuClazz>lambdaQuery();
+                    clazzSearch.eq(StuClazz::getStuId, stuAnswer.getStuId());
+                    Exam exam = examMapper.selectById(stuAnswer.getExamId());
+                    clazzSearch.eq(StuClazz::getClazzId, exam.getClazzId());
+                    StuClazz stuClazz = stuClazzMapper.selectOne(clazzSearch);
+                    if(stuScores == null) {
+                        stuScores = new StuScores();
+                        stuScores.setScores(0.0);
+                        stuScores.setClazzId(stuClazz.getClazzId());
+                        stuScores.setExamId(stuAnswer.getExamId());
+                        stuScores.setStuId(stuAnswer.getStuId());
+                        stuScores.setEndTime(new Date(System.currentTimeMillis()));
+                        stuScores.setState("finish");
+                        stuScoresMapper.insert(stuScores);
+                    }
+                    stuScores = stuScoresMapper.selectOne(wrappers);
+                    if(stuAnswer.getStuScores() != null) {
+                        question.setAcScores(question.getAcScores() - stuAnswer.getStuScores());
+                        question.setTotScores(question.getTotScores() - stuAnswer.getDefaultScores());
+                        stuScores.setScores(stuScores.getScores() - stuAnswer.getStuScores());
+                    }
+                    question.setAcScores(question.getAcScores() + score);
+                    question.setTotScores(question.getTotScores() + stuAnswer.getDefaultScores());
+                    question.setDifficultyRatio(question.getAcScores() / question.getTotScores());
+                    stuScores.setScores(stuScores.getScores() + score);
+                    stuAnswer.setStuScores(score);
+                    stuScores.setEndTime(new Date(System.currentTimeMillis()));
+                    stuAnswerMapper.updateById(stuAnswer);
+                    questionMapper.updateById(question);
+                    stuScoresMapper.updateById(stuScores);
+                    // ----------------
                     stuAnswer.setStuScores(stuAnswer.getDefaultScores());
                 }
                 else {
