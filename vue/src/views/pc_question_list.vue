@@ -14,7 +14,7 @@
     <el-table height="510" style="width: 99%" :data="tableData" border stripe default-expand-all>
       <el-table-column type="expand">
         <template #default="props">
-          <div v-for="(value, index) in props.row.option" :key="index">
+          <div v-for="(value, index) in props.row.options" :key="index">
             <p style="margin: 5px"> {{ toChar(index) + ". " }} {{ value.optionText }}</p>
           </div>
         </template>
@@ -43,9 +43,9 @@
             <el-input v-model="form.text" style="width: 75%"/>
           </el-form-item>
           <el-form-item label="类型">
-            <el-radio-group v-model="form.category" style="width: 75%">
-              <el-radio label="选择题" value="xz"/>
-              <el-radio label="主题题" value="zg"/>
+            <el-radio-group v-model="form.myCategory" style="width: 75%">
+              <el-radio label="选择题"/>
+              <el-radio label="主观题"/>
             </el-radio-group>
           </el-form-item>
           <el-form-item label="答案">
@@ -53,6 +53,22 @@
           </el-form-item>
           <el-form-item label="课程编号">
             <el-input v-model="form.clazzCode" style="width: 75%"/>
+          </el-form-item>
+          <el-form-item label="难度系数">
+            <el-input v-model="form.difficultyRatio" placeholder="0-1之间" style="width: 75%"/>
+          </el-form-item>
+          <el-form-item label="分值">
+            <el-input v-model="form.defaultScores" style="width: 75%"/>
+          </el-form-item>
+          <el-form-item label="选项">
+            <div v-for="(item, index) in form.options" :key="index">
+              <div>
+                <el-input v-model="form.options[index].optionText" style="width: 50%;margin: 0 5px 0 0 ;"/>
+                <el-button style="width: 20%" type="danger" @click="myDelete(index)">-</el-button>
+              </div>
+            </div>
+            <el-input v-model="option" style="width: 50%;margin: 0 5px 0 0 ;"></el-input>
+            <el-button style="width: 20%" type="success" @click="addOption">+</el-button>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="onSubmitAdd">创建</el-button>
@@ -64,20 +80,36 @@
     <div style="margin: 10px 0">
       <el-dialog v-model="dialogVisibleEdit" title="修改教师信息" width="30%">
         <el-form ref="editForm" :model="editForm" label-width="120px">
-          <el-form-item label="用户名">
-            <el-input v-model="editForm.name" style="width: 75%"/>
+          <el-form-item label="题目">
+            <el-input v-model="editForm.text" style="width: 75%"/>
           </el-form-item>
-          <el-form-item label="教师号">
-            <el-input v-model="editForm.code" style="width: 75%" disabled/>
+          <el-form-item label="类型">
+            <el-radio-group v-model="editForm.myCategory" style="width: 75%">
+              <el-radio label="选择题"/>
+              <el-radio label="主观题"/>
+            </el-radio-group>
           </el-form-item>
-          <el-form-item label="密码">
-            <el-input v-model="editForm.pwd" style="width: 75%"/>
+          <el-form-item label="答案">
+            <el-input v-model="editForm.sampleAnswer" style="width: 75%"/>
           </el-form-item>
-          <el-form-item label="姓别">
-            <el-select v-model="editForm.sex" placeholder="请选择" style="width: 75%">
-              <el-option label="男" value="男"/>
-              <el-option label="女" value="女"/>
-            </el-select>
+          <el-form-item label="课程编号">
+            <el-input v-model="editForm.clazzCode" style="width: 75%"/>
+          </el-form-item>
+          <el-form-item label="难度系数">
+            <el-input v-model="editForm.difficultyRatio" placeholder="0-1之间" style="width: 75%"/>
+          </el-form-item>
+          <el-form-item label="分值">
+            <el-input v-model="editForm.defaultScores" style="width: 75%"/>
+          </el-form-item>
+          <el-form-item label="选项">
+            <div v-for="(item, index) in editForm.options" :key="index">
+              <div>
+                <el-input v-model="editForm.options[index].optionText" style="width: 50%;margin: 0 5px 0 0 ;"/>
+                <el-button style="width: 20%" type="danger" @click="myEditDelete(index)">-</el-button>
+              </div>
+            </div>
+            <el-input v-model="option" style="width: 50%;margin: 0 5px 0 0 ;"></el-input>
+            <el-button style="width: 20%" type="success" @click="addEditOption">+</el-button>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="onSubmit">修改</el-button>
@@ -103,6 +135,8 @@ export default {
       tableData: [],
       form: {},
       editForm: {},
+      value: '',
+      option: null,
     }
   },
   created() {
@@ -114,6 +148,40 @@ export default {
     toChar(x) {
       return String.fromCharCode(x + 65);
     },
+    myDelete(index) {
+      this.form.options.splice(index, 1)
+    },
+    addOption() {
+      if(this.option === undefined || this.option === null || this.option === "") {
+        this.$message({
+          type: "error",
+          message: "选项值为空"
+        })
+        return;
+      }
+      let w = {
+        optionText: this.option
+      }
+      this.form.options.push(w)
+      this.option = null
+    },
+    myEditDelete(index) {
+      this.editForm.options.splice(index, 1)
+    },
+    addEditOption() {
+      if(this.option === undefined || this.option === null || this.option === "") {
+        this.$message({
+          type: "error",
+          message: "选项值为空"
+        })
+        return;
+      }
+      let w = {
+        optionText: this.option
+      }
+      this.editForm.options.push(w)
+      this.option = null
+    },
     load() {
       request.post("/api/question/find_question_list", null, {
         params: {
@@ -121,30 +189,42 @@ export default {
           search: this.search
         }
       }).then(res => {
-        console.log(res)
+        // console.log(res)
         let len = res.data.length
         this.tableData = res.data
         for(let i = 0; i < len; i++) {
           if(this.tableData[i].category === "xz") this.tableData[i].myCategory = "选择题"
           else this.tableData[i].myCategory = "主观题"
           request.post("/api/question/find_question_options_list", res.data[i]).then(tempRes => {
-            console.log(tempRes.data)
-            this.tableData[i].option = tempRes.data
+            // console.log(tempRes.data)
+            this.tableData[i].options = tempRes.data
           })
         }
       })
     },
     add() {
       this.dialogVisible = true
-      this.form = {}
+      this.form = {
+        options: [],
+      }
     },
     onSubmitAdd() {
+      if(this.form.myCategory === "选择题") this.form.category = "xz"
+      else  this.form.category = "zg"
       request.post("/api/question/add_question", this.form).then(res => {
         if(res.code === '0') {
           this.$message({
             type: "success",
             message: "创建成功"
           })
+          let len = this.form.options.length
+          for(let i = 0;i < len;i++) {
+            if(this.form.options[i].optionText === this.form.sampleAnswer) this.form.options[i].isCorrect = 1
+            else this.form.options[i].isCorrect = 0
+            request.post("/api/question/add_question_option", this.form.options[i]).then(res => {
+              // console.log(res)
+            })
+          }
           // console.log(res)
           this.load()
           this.dialogVisible = false
@@ -161,12 +241,22 @@ export default {
       this.editForm = temp
     },
     onSubmit() {
+      if(this.editForm.myCategory === "选择题") this.editForm.category = "xz"
+      else  this.editForm.category = "zg"
       request.post("/api/question/update_question", this.editForm).then(res => {
         if(res.code === '0') {
           this.$message({
             type: "success",
             message: "修改成功"
           })
+          let len = this.editForm.options.length
+          for(let i = 0;i < len;i++) {
+            if(this.editForm.options[i].optionText === this.editForm.sampleAnswer) this.editForm.options[i].isCorrect = 1
+            else this.editForm.options[i].isCorrect = 0
+            request.post("/api/question/update_question_option", this.editForm.options[i]).then(res => {
+              // console.log(res)
+            })
+          }
           this.load()
           this.dialogVisibleEdit = false
         } else {
